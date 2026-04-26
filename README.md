@@ -1,6 +1,7 @@
 # pi-tweak
 
 Tweaks, extensions, and skills for [pi-mono]([https://github.com/badlogic/pi-mono](https://github.com/badlogic/pi-mono/tree/main/packages/coding-agent) — the pi coding agent.
+Needless to say these are mainly written by pi itself :) mainly locally, mainly using qwen3.6-35B-A3B (spefically using https://huggingface.co/unsloth/Qwen3.6-35B-A3B-GGUF UD-IQ4_NL quantized version since)
 
 ## What's inside
 
