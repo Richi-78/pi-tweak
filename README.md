@@ -1,6 +1,6 @@
 # pi-tweak
 
-Community tweaks, extensions, and skills for [pi-mono](https://github.com/badlogic/pi-mono) — the mono repo variant of the pi coding agent.
+Tweaks, extensions, and skills for [pi-mono](https://github.com/badlogic/pi-mono) — the mono repo variant of the pi coding agent.
 
 ## What's inside
 
@@ -29,7 +29,3 @@ Or install a single extension manually by copying the `.ts` file directly into `
 ## Extensions
 
 - **[token-stats](./extensions/)** — Token usage statistics across all sessions
-
-## Contributing
-
-Feel free to submit extensions, skills, or tweaks via pull requests.
