@@ -1,0 +1,9 @@
+{
+  "name": "pi-token-stats",
+  "version": "1.0.0",
+  "description": "Shows total token usage stats across all pi sessions",
+  "keywords": ["pi-package"],
+  "pi": {
+    "extensions": ["./extensions"]
+  }
+}
