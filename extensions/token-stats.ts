@@ -1,23 +1,33 @@
 /**
- * Token Stats - mostra l'uso totale dei token in tutte le sessioni
+ * Token Stats - shows total token usage across all sessions
  *
- * Le stats vengono inviate come messaggio personalizzato nel contesto,
- * così appaiono all'avvio della sessione ma scorrono con il resto della
- * conversazione, proprio come l'avviso di sistema di pi.
+ * Stats are sent as a custom message in context, appearing at session start
+ * and scrolling with the conversation, just like pi's system prompt notice.
  *
- * Mostra:
- * - Token attuali della sessione (input/output)
- * - Token totali di tutte le sessioni
- * - Risparmio stimato rispetto a modelli cloud
+ * Shows:
+ * - Current session token usage (input/output)
+ * - Total tokens across all sessions
+ * - Estimated savings vs. cloud model pricing
  */
 
 import type { AssistantMessage } from "@mariozechner/pi-ai";
 import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
 import { SessionManager } from "@mariozechner/pi-coding-agent";
 
-/** Costi cloud: 1€/M input, 3€/M output */
-const COST_INPUT_PER_M = 0.1;
-const COST_OUTPUT_PER_M = 0.3;
+/**
+ * Cloud model pricing per million tokens.
+ * Adjust these to match your comparison baseline (e.g., $1/M input, $3/M output
+ * is typical for mid-tier cloud models like Claude Haiku / GPT-4o-mini).
+ */
+const CLOUD_MODEL = {
+  name: "Claude Haiku",
+  inputPerM: 1.0,   // $/M input tokens
+  outputPerM: 3.0,  // $/M output tokens
+  currency: "$",
+};
+
+const COST_INPUT_PER_M = CLOUD_MODEL.inputPerM;
+const COST_OUTPUT_PER_M = CLOUD_MODEL.outputPerM;
 
 /** Formatta un numero con suffisso k/M */
 function fmt(n: number): string {
@@ -46,10 +56,10 @@ function sumUsage(entries: { type: string; message: any }[]): {
   return { input, output, cacheRead, cacheWrite };
 }
 
-/** Calcola il risparmio stimato rispetto a modelli cloud */
+/** Calculate estimated savings vs. cloud model pricing */
 function calcSavings(input: number, output: number): string {
   const cost = (input / 1_000_000) * COST_INPUT_PER_M + (output / 1_000_000) * COST_OUTPUT_PER_M;
-  return `${cost.toFixed(2)}€`;
+  return `${CLOUD_MODEL.currency}${cost.toFixed(2)}`;
 }
 
 export default function (pi: ExtensionAPI) {
@@ -81,13 +91,13 @@ export default function (pi: ExtensionAPI) {
 
     const content = [
       "⚡ **Token Usage**",
-      `  Sessione:  in ${fmt(cur.input)}  out ${fmt(cur.output)}`,
-      `  Totale:    in ${fmt(totalInput)}  out ${fmt(totalOutput)} (${sessionCount} sessioni)`,
-      `  Risparmiato (rispetto a DeepseekV4.0 Flash): ${savings}`,
+      `  Current:   in ${fmt(cur.input)}  out ${fmt(cur.output)}`,
+      `  Total:     in ${fmt(totalInput)}  out ${fmt(totalOutput)} (${sessionCount} sessions)`,
+      `  Savings   (compared to ${CLOUD_MODEL.name} ${CLOUD_MODEL.currency}${CLOUD_MODEL.inputPerM}/M - ${CLOUD_MODEL.currency}${CLOUD_MODEL.outputPerM}/M): ${savings}`,
     ];
 
     if (totalCacheRead > 0 || totalCacheWrite > 0) {
-      content.push(`  Cache:     letture ${fmt(totalCacheRead)}  scritture ${fmt(totalCacheWrite)}`);
+      content.push(`  Cache:     read ${fmt(totalCacheRead)}  write ${fmt(totalCacheWrite)}`);
     }
 
     // Invia come messaggio personalizzato nel contesto, così scorre con la conversazione
