@@ -1,6 +1,6 @@
 # pi-tweak
 
-Tweaks, extensions, and skills for [pi-mono](https://github.com/badlogic/pi-mono) — the mono repo variant of the pi coding agent.
+Tweaks, extensions, and skills for [pi-mono]([https://github.com/badlogic/pi-mono](https://github.com/badlogic/pi-mono/tree/main/packages/coding-agent) — the pi coding agent.
 
 ## What's inside
 
