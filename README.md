@@ -1,20 +1,35 @@
-# pi-token-stats
+# pi-tweak
 
-Token usage statistics for [pi](https://github.com/mariozechner/pi-coding-agent). Shows total tokens spent across all sessions.
+Community tweaks, extensions, and skills for [pi-mono](https://github.com/badlogic/pi-mono) — the mono repo variant of the pi coding agent.
 
-## Install
+## What's inside
+
+This repo collects useful additions for pi-mono:
+
+| Directory | Contents |
+|-----------|----------|
+| `extensions/` | Extension `.ts` files — drop into your `~/.pi/agent/extensions/` directory |
+
+## Usage
+
+### Extensions
+
+Each extension is a standalone `.ts` file. To install:
 
 ```bash
-pi install git:github.com/wikirichi/pi-token-stats
+# Clone this repo
+git clone https://github.com/Richi-78/pi-tweak.git ~/.pi/pi-tweak
+
+# Copy extensions you want
+cp ~/.pi/pi-tweak/extensions/*.ts ~/.pi/agent/extensions/
 ```
 
-## Features
+Or install a single extension manually by copying the `.ts` file directly into `~/.pi/agent/extensions/`.
 
-- Current session token usage (input/output)
-- Total tokens across all sessions
-- Estimated savings vs. cloud models
-- Cache read/write statistics
+## Extensions
 
-## Screenshots
+- **[token-stats](./extensions/)** — Token usage statistics across all sessions
 
-![Token Stats](./screenshot.png)
+## Contributing
+
+Feel free to submit extensions, skills, or tweaks via pull requests.
