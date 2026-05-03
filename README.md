@@ -9,24 +9,28 @@ This repo collects useful additions for pi-mono:
 
 | Directory | Contents |
 |-----------|----------|
-| `extensions/` | Extension `.ts` files — drop into your `~/.pi/agent/extensions/` directory |
+| `extensions/` | Extension folders — each contains `.ts`, `README.md`, and a `screenshot.png` placeholder |
 
 ## Usage
 
 ### Extensions
 
-Each extension is a standalone `.ts` file. To install:
+Each extension lives in its own folder. To install:
 
 ```bash
 # Clone this repo
 git clone https://github.com/Richi-78/pi-tweak.git ~/.pi/pi-tweak
 
-# Copy extensions you want
-cp ~/.pi/pi-tweak/extensions/*.ts ~/.pi/agent/extensions/
+# Copy specific extensions
+cp ~/.pi/pi-tweak/extensions/token-stats/token-stats.ts ~/.pi/agent/extensions/
+cp ~/.pi/pi-tweak/extensions/auto-session-name/auto-session-name.ts ~/.pi/agent/extensions/
+cp ~/.pi/pi-tweak/extensions/session-loader/session-loader.ts ~/.pi/agent/extensions/
 ```
-
-Or install a single extension manually by copying the `.ts` file directly into `~/.pi/agent/extensions/`.
 
 ## Extensions
 
-- **[token-stats](./extensions/)** — Token usage statistics across all sessions
+| Extension | Description |
+|-----------|-------------|
+| **[token-stats](./extensions/token-stats/)** | Token usage statistics across all sessions |
+| **[auto-session-name](./extensions/auto-session-name/)** | Automatically names sessions from the first prompt |
+| **[session-loader](./extensions/session-loader/)** | `/load` command with a scrollable session picker |
