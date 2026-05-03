@@ -23,8 +23,7 @@ git clone https://github.com/Richi-78/pi-tweak.git ~/.pi/pi-tweak
 
 # Copy specific extensions
 cp ~/.pi/pi-tweak/extensions/token-stats/token-stats.ts ~/.pi/agent/extensions/
-cp ~/.pi/pi-tweak/extensions/auto-session-name/auto-session-name.ts ~/.pi/agent/extensions/
-cp ~/.pi/pi-tweak/extensions/session-loader/session-loader.ts ~/.pi/agent/extensions/
+
 ```
 
 ## Extensions
