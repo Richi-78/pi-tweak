@@ -32,5 +32,3 @@ cp ~/.pi/pi-tweak/extensions/session-loader/session-loader.ts ~/.pi/agent/extens
 | Extension | Description |
 |-----------|-------------|
 | **[token-stats](./extensions/token-stats/)** | Token usage statistics across all sessions |
-| **[auto-session-name](./extensions/auto-session-name/)** | Automatically names sessions from the first prompt |
-| **[session-loader](./extensions/session-loader/)** | `/load` command with a scrollable session picker |
