@@ -8,6 +8,7 @@
  *   - tavily_search: Search the web for current information
  *   - tavily_extract: Extract full content from one or more URLs
  *   - tavily_crawl: Crawl a website and collect page content
+ *   - tavily_map: Discover/mapped URLs from a website (sitemap generation)
  */
 
 import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
@@ -140,6 +141,65 @@ async function tavilyPost(path: string, body: Record<string, unknown>): Promise<
   }
 
   return payload;
+}
+
+// ── tavily_map implementation ───────────────────────────────────────────────
+
+interface MapParams {
+  baseUrl: string;
+  instructions?: string;
+  maxDepth: number;
+  maxBreadth: number;
+  limit: number;
+  selectPaths?: string[];
+  selectDomains?: string[];
+  excludePaths?: string[];
+  excludeDomains?: string[];
+  allowExternal: boolean;
+  timeout: number;
+  includeUsage: boolean;
+}
+
+async function executeMap(
+  _toolCallId: string,
+  params: MapParams,
+  _signal: AbortSignal | undefined,
+  _onUpdate: ((update: { content: Array<{ type: string; text: string }> }) => void) | undefined,
+  _ctx: ExtensionContext,
+): Promise<{ content: Array<{ type: string; text: string }>; details: Record<string, unknown> }> {
+  const payload: Record<string, unknown> = {
+    url: params.baseUrl,
+    max_depth: params.maxDepth,
+    max_breadth: params.maxBreadth,
+    limit: params.limit,
+    allow_external: params.allowExternal,
+    timeout: params.timeout,
+  };
+  if (params.instructions) payload.instructions = params.instructions;
+  if (params.selectPaths) payload.select_paths = params.selectPaths;
+  if (params.selectDomains) payload.select_domains = params.selectDomains;
+  if (params.excludePaths) payload.exclude_paths = params.excludePaths;
+  if (params.excludeDomains) payload.exclude_domains = params.excludeDomains;
+  if (params.includeUsage) payload.include_usage = params.includeUsage;
+
+  const result = (await tavilyPost("/map", payload)) as Record<string, unknown>;
+
+  const urls = (result.results as string[]) ?? [];
+
+  return {
+    content: [
+      {
+        type: "text",
+        text: `Mapped ${urls.length} URL(s) from ${params.baseUrl}:\n\n${urls.map((u, i) => `${i + 1}. ${u}`).join("\n")}`,
+      },
+    ],
+    details: {
+      baseUrl: params.baseUrl,
+      urlsMapped: urls.length,
+      responseTime: (result.response_time as number) ?? undefined,
+      creditsUsed: (result.usage as Record<string, unknown>)?.credits,
+    },
+  };
 }
 
 // ── Tool implementations ────────────────────────────────────────────────────
@@ -323,6 +383,21 @@ async function executeCrawl(
 }
 
 // ── Parameter types ─────────────────────────────────────────────────────────
+
+interface MapParams {
+  baseUrl: string;
+  instructions?: string;
+  maxDepth: number;
+  maxBreadth: number;
+  limit: number;
+  selectPaths?: string[];
+  selectDomains?: string[];
+  excludePaths?: string[];
+  excludeDomains?: string[];
+  allowExternal: boolean;
+  timeout: number;
+  includeUsage: boolean;
+}
 
 interface SearchParams {
   query: string;
@@ -520,6 +595,117 @@ export default function (pi: ExtensionAPI) {
           maxDepth: params.maxDepth ?? 2,
           maxBreadth: params.maxBreadth ?? 20,
           limit: params.limit ?? 50,
+        },
+        signal,
+        onUpdate,
+        ctx,
+      );
+    },
+  });
+
+  // Register tavily_map tool
+  pi.registerTool({
+    name: "tavily_map",
+    label: "Tavily Map",
+    description:
+      "Discover and map URLs from a website. Generates a comprehensive sitemap by traversing the site like a graph. Returns a list of discovered URLs without fetching page content. Useful for understanding site structure before crawling or extracting.",
+    promptSnippet: "Discover/mapped URLs from a website via Tavily",
+    promptGuidelines: [
+      "Use tavily_map when you need to discover all URLs on a website (sitemap generation).",
+      "Use tavily_map before crawling or extracting to understand the full site structure.",
+      "Use select_paths/exclude_paths to filter URLs by pattern (regex).",
+    ],
+    parameters: Type.Object({
+      baseUrl: Type.String({
+        description: "The root URL to begin mapping from (e.g., 'https://docs.example.com').",
+      }),
+      instructions: Type.Optional(
+        Type.String({
+          description: "Natural language instructions for the crawler. When specified, the cost increases to 2 API credits per 10 successful pages instead of 1 credit per 10 pages.",
+        }),
+      ),
+      maxDepth: Type.Optional(
+        Type.Number({
+          description: "Max depth from base URL (default: 1). Range: 1-5.",
+          minimum: 1,
+          maximum: 5,
+        }),
+      ),
+      maxBreadth: Type.Optional(
+        Type.Number({
+          description: "Max links to follow per page (default: 20). Range: 1-500.",
+          minimum: 1,
+          maximum: 500,
+        }),
+      ),
+      limit: Type.Optional(
+        Type.Number({
+          description: "Total URLs to discover before stopping (default: 50).",
+          minimum: 1,
+        }),
+      ),
+      selectPaths: Type.Optional(
+        Type.Array(
+          Type.String({
+            description: "Regex patterns to select only URLs with matching paths (e.g., ['/docs/.*', '/api/v1.*']).",
+          }),
+        ),
+      ),
+      selectDomains: Type.Optional(
+        Type.Array(
+          Type.String({
+            description: "Regex patterns to restrict crawling to specific domains (e.g., ['^docs\\.example\\.com$']).",
+          }),
+        ),
+      ),
+      excludePaths: Type.Optional(
+        Type.Array(
+          Type.String({
+            description: "Regex patterns to exclude URLs with matching paths (e.g., ['/admin/.*', '/private/.*']).",
+          }),
+        ),
+      ),
+      excludeDomains: Type.Optional(
+        Type.Array(
+          Type.String({
+            description: "Regex patterns to exclude specific domains (e.g., ['^cdn\\.example\\.com$']).",
+          }),
+        ),
+      ),
+      allowExternal: Type.Optional(
+        Type.Boolean({
+          description: "Whether to include external domain links in results (default: true).",
+        }),
+      ),
+      timeout: Type.Optional(
+        Type.Number({
+          description: "Max seconds to wait for the map operation (default: 150). Range: 10-150.",
+          minimum: 10,
+          maximum: 150,
+        }),
+      ),
+      includeUsage: Type.Optional(
+        Type.Boolean({
+          description: "Whether to include credit usage information in the response (default: false).",
+        }),
+      ),
+    }),
+    async execute(toolCallId, params, signal, onUpdate, ctx) {
+      return executeMap(
+        toolCallId,
+        {
+          baseUrl: params.baseUrl,
+          instructions: params.instructions,
+          maxDepth: params.maxDepth ?? 1,
+          maxBreadth: params.maxBreadth ?? 20,
+          limit: params.limit ?? 50,
+          selectPaths: params.selectPaths,
+          selectDomains: params.selectDomains,
+          excludePaths: params.excludePaths,
+          excludeDomains: params.excludeDomains,
+          allowExternal: params.allowExternal ?? true,
+          timeout: params.timeout ?? 150,
+          includeUsage: params.includeUsage ?? false,
         },
         signal,
         onUpdate,

@@ -7,6 +7,7 @@ Web search, page extraction, and site crawling via Tavily API.
 - **tavily_search** — Search the web for current information
 - **tavily_extract** — Extract full content from URLs
 - **tavily_crawl** — Crawl a website for broad content coverage
+- **tavily_map** — Discover and map all URLs from a website (sitemap generation)
 
 ## Setup
 
