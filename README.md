@@ -10,6 +10,7 @@ This repo collects useful additions for pi-mono:
 | Directory | Contents |
 |-----------|----------|
 | `extensions/` | Extension folders — each contains `.ts`, `README.md`, and a `screenshot.png` placeholder |
+| `skills/` | Skill folders — each contains a `SKILL.md` with specialized instructions |
 
 ## Usage
 
@@ -24,6 +25,8 @@ git clone https://github.com/Richi-78/pi-tweak.git ~/.pi/pi-tweak
 # Copy specific extensions
 cp ~/.pi/pi-tweak/extensions/token-stats/token-stats.ts ~/.pi/agent/extensions/
 
+# Copy specific skills
+cp -r ~/.pi/pi-tweak/skills/tavily-web-search ~/.pi/agent/skills/tavily-web-search
 ```
 
 ## Extensions
@@ -31,3 +34,10 @@ cp ~/.pi/pi-tweak/extensions/token-stats/token-stats.ts ~/.pi/agent/extensions/
 | Extension | Description |
 |-----------|-------------|
 | **[token-stats](./extensions/token-stats/)** | Token usage statistics across all sessions |
+| **[tavily-web-search](./extensions/tavily-web-search/)** | Web search, page extraction, and site crawling via Tavily API |
+
+## Skills
+
+| Skill | Description |
+|-------|-------------|
+| **[tavily-web-search](./skills/tavily-web-search/)** | Search the web, extract page content, and crawl sites using Tavily API |
