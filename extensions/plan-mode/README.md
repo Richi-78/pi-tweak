@@ -4,7 +4,7 @@
 
 ## Overview
 
-Plan Mode is a Pi coding agent extension that enables a **read-only exploration mode** for safe code analysis. When enabled, built-in write tools (`edit`, `write`) are disabled, and bash commands are restricted to an allowlist of read-only operations.
+Plan Mode is a Pi coding agent extension that enables a **read-only exploration mode** for safe code analysis. When enabled, built-in write tools (`edit`, `write`) are disabled, and bash commands are restricted to an allowlist of read-only operations. It's based on the sample plan-mode of Pi
 
 It provides a structured workflow for:
 1. **Planning** — Create a numbered, step-by-step plan for a task.
@@ -81,58 +81,6 @@ On session resume with plan mode active, the extension detects existing `plan.md
 ### Blocked Commands
 
 `rm`, `rmdir`, `mv`, `cp`, `mkdir`, `touch`, `chmod`, `chown`, `ln`, `tee`, `truncate`, `shred`, `dd`, shell redirections (`>`, `>>`), package managers (`npm install`, `yarn add`, `pip install`, `apt install`, `brew install`), `git add/commit/push/pull/merge`, `sudo`, `su`, `kill`, `reboot`, `shutdown`, `systemctl`, `service`, `vim`, `nano`, `emacs`, `code`
-
-## Architecture
-
-### Files
-
-| File | Description |
-|------|-------------|
-| `index.ts` | Main extension logic — hooks, commands, UI integration, state management |
-| `utils.ts` | Pure utility functions — command validation, plan parsing, step extraction |
-
-### Extension Hooks
-
-The extension uses the Pi extension API to hook into the agent lifecycle:
-
-- `session_start` — Restore persisted state, check for existing `plan.md`
-- `before_agent_start` — Inject plan mode or execution context
-- `tool_call` — Block destructive bash commands
-- `context` — Filter out plan mode context when not active
-- `agent_end` — Extract plans, handle plan.md operations
-- `turn_end` — Track progress markers (`[DONE:n]`)
-
-### State Persistence
-
-Plan mode state is persisted across turns using `pi.appendEntry()` and restored on session start/resume. This includes:
-- Mode enabled/disabled
-- Todo items with completion status
-- Execution mode flag
-- Previously active tools list
-
-## Development
-
-### Extending the Allowlist
-
-Edit `utils.ts` and add patterns to the `SAFE_PATTERNS` array:
-
-```typescript
-const SAFE_PATTERNS = [
-  // ... existing patterns
-  /^\s*your-command\b/i,
-];
-```
-
-### Adding Blocked Commands
-
-Add patterns to the `DESTRUCTIVE_PATTERNS` array in `utils.ts`:
-
-```typescript
-const DESTRUCTIVE_PATTERNS = [
-  // ... existing patterns
-  /\byour-destructive-command\b/i,
-];
-```
 
 ## Dependencies
 
