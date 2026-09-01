@@ -33,6 +33,7 @@ cp -r ~/.pi/pi-tweak/skills/tavily-web-search ~/.pi/agent/skills/tavily-web-sear
 
 | Extension | Description |
 |-----------|-------------|
+| **[plan-mode](./extensions/plan-mode/)** | Read-only exploration mode with plan creation, step tracking, and progress execution |
 | **[task-duration](./extensions/task-duration/)** | Toast notification showing task completion time |
 | **[token-stats](./extensions/token-stats/)** | Token usage statistics across all sessions |
 | **[tavily-web-search](./extensions/tavily-web-search/)** | Web search, page extraction, and site crawling via Tavily API |
